@@ -1,0 +1,10 @@
+# Build & Outputs
+build/
+*.apk
+*.idsig
+
+# Keystores (podem ser ignorados ou mantidos para desenvolvimento local)
+# estoquemais-release.keystore
+
+# macOS
+.DS_Store

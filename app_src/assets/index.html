@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>Estoque Mais - Beta Unificado</title>
+  <style>
+    :root {
+      --primary: #0F3D4C;
+      --primary-dark: #0B2D39;
+      --primary-light: #1B6A82;
+      --accent: #E0732B;
+      --accent-hover: #C9601E;
+      --bg: #F3F5F7;
+      --surface: #FFFFFF;
+      --text: #14202B;
+      --text-muted: #4A5B68;
+      --text-subtle: #B7D3DC;
+      --border: #E6EAEE;
+      --border-dark: #C9D2D9;
+      --success-bg: #E8F3F0;
+      --success-text: #14473D;
+      --warning-bg: #FFF1DC;
+      --warning-text: #5E3A00;
+      --danger-bg: #FDECEA;
+      --danger-text: #B3261E;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 3px 12px rgba(15, 61, 76, 0.08);
+      --shadow-lg: 0 8px 24px rgba(15, 61, 76, 0.14);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    button, select, input, textarea {
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+    }
+    button { cursor: pointer; border: 0; }
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 74px; /* space for bottom nav */
+    }
+    .app.no-nav {
+      padding-bottom: 20px;
+    }
+    
+    /* Top Bar */
+    .top {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .top .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+    .logo svg { display: block; flex-shrink: 0; }
+    .lk {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+      border-radius: 20px;
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s;
+    }
+    .lk:active { background: rgba(255,255,255,0.24); }
+    .tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      margin-top: 12px;
+    }
+    h1 {
+      font-size: 21px;
+      margin: 2px 0 0;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h2 span {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .ctx {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+    .ctx select {
+      flex: 1;
+      min-height: 38px;
+      border-radius: 10px;
+      border: 0;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .ro {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      font-weight: 600;
+      font-size: 12px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    /* Layout Body */
+    .body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 10px;
+    }
+    .stats.grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .stats.grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .st {
+      flex: 1;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      text-align: left;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .st:active { transform: scale(0.98); }
+    .st b {
+      display: block;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .st span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 4px;
+      line-height: 1.25;
+    }
+    .st.al {
+      background: var(--warning-bg);
+      border-color: rgba(224, 115, 43, 0.2);
+    }
+    .st.al b { color: var(--warning-text); }
+    .st.on {
+      border-color: var(--accent);
+      background: #FFF8F3;
+    }
+    
+    /* Action Buttons & Grids */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      min-height: 44px;
+      border: 0;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-weight: 700;
+      font-size: 14px;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:active { opacity: 0.85; transform: scale(0.98); }
+    .btn.o { background: var(--accent); color: #fff; }
+    .btn.c { background: var(--border); color: var(--text); }
+    .btn.w { width: 100%; min-height: 48px; }
+    .btn.sm { min-height: 36px; font-size: 13px; padding: 0 10px; }
+    .btn.danger { background: #D32F2F; color: #fff; }
+    
+    /* Cards & Lists */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .it {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .it:last-child { border-bottom: 0; }
+    .it .d { flex: 1; min-width: 0; }
+    .it .d b {
+      display: block;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .it .d span {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    /* Badges */
+    .bd {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 2px 7px;
+      background: var(--success-bg);
+      color: var(--success-text);
+      margin-right: 4px;
+    }
+    .bd.a { background: var(--warning-bg); color: var(--warning-text); }
+    .bd.r { background: var(--danger-bg); color: var(--danger-text); }
+    .bd.info { background: #E1F0F5; color: #0F3D4C; }
+    
+    /* Switches */
+    .sw {
+      min-width: 82px;
+      min-height: 38px;
+      border: 0;
+      border-radius: 19px;
+      font-weight: 700;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    .sw.on { background: var(--success-bg); color: var(--success-text); }
+    .sw.off { background: var(--border); color: var(--text-muted); }
+    
+    /* Search Bar */
+    .search-box {
+      display: flex;
+      gap: 8px;
+    }
+    .search-box input {
+      flex: 1;
+      min-height: 44px;
+      border: 1px solid var(--border-dark);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 15px;
+      background: var(--surface);
+    }
+    
+    /* Forms */
+    .frm {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .frm label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .frm select, .frm input, .frm textarea {
+      min-height: 44px;
+      border: 1px solid var(--border-dark);
+      border-radius: 10px;
+      padding: 0 12px;
+      width: 100%;
+      background: #fff;
+      color: var(--text);
+    }
+    .opts {
+      display: flex;
+      gap: 8px;
+    }
+    .opts button {
+      flex: 1;
+      min-height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--border-dark);
+      background: #fff;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .opts button.on {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    
+    /* Profile Chooser Screen */
+    .pf-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px 16px;
+    }
+    .pf-btn {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: left;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.1s, border-color 0.15s;
+    }
+    .pf-btn:active { transform: scale(0.98); border-color: var(--primary); }
+    .pf-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #E8F3F7;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .pf-info { flex: 1; }
+    .pf-info b { display: block; font-size: 16px; color: var(--text); }
+    .pf-info small { display: block; font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
+    
+    /* Notes & Hints */
+    .note {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .empty-msg {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    
+    /* Bottom Navigation Bar */
+    nav.bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 8px env(safe-area-inset-bottom, 6px);
+      z-index: 30;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+    }
+    nav.bottom-bar button {
+      background: none;
+      border: 0;
+      min-height: 48px;
+      min-width: 54px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border-radius: 8px;
+    }
+    nav.bottom-bar button svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+    nav.bottom-bar button.on {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    
+    /* Modals / Overlays */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 61, 76, 0.65);
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+      backdrop-filter: blur(2px);
+    }
+    .modal-sheet {
+      background: #fff;
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: slideUp 0.2s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h3 { margin: 0; font-size: 18px; }
+    .close-btn {
+      background: var(--border);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Toast Notification */
+    #t {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 84px;
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      text-align: center;
+      z-index: 60;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      animation: fadeIn 0.15s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+  <div id="t"></div>
+  <div id="modal-container"></div>
+
+  <script>
+    // --- ICONES & MARCA ---
+    var LOGO_SVG = '<svg width="26" height="26" viewBox="0 0 100 100"><polygon points="50,8 88,29 50,50 12,29" fill="#E0732B"/><polygon points="12,29 50,50 50,92 12,71" fill="#0B2D39" stroke="#3B6877" stroke-width="2"/><polygon points="88,29 50,50 50,92 88,71" fill="#1B6A82"/></svg>';
+    var PERFIS = {
+      admin: { n: 'Administrador', sub: 'Empresa · Cadastros, Usuários e Auditoria', abas: ['inicio', 'produtos', 'usuarios', 'auditoria'] },
+      sup:   { n: 'Supervisor', sub: 'Aprovações, Tarefas e Governança WMS', abas: ['inicio', 'aprovacoes', 'tarefas', 'auditoria'] },
+      op:    { n: 'Operador', sub: 'Recebimento, Picking, Movimentação e Chão de Fábrica', abas: ['inicio', 'tarefas', 'movimentar', 'produtos'] },
+      conf:  { n: 'Conferente', sub: 'Conferência de Carga, Divergências e Aval do Cliente', abas: ['inicio', 'conferencia', 'avais', 'auditoria'] },
+      aud:   { n: 'Auditor', sub: 'Somente Leitura · Análise de Estoque e Trilha Completa', abas: ['inicio', 'estoque', 'auditoria'] }
+    };
+    var DEPS = ['Depositante A (Distribuição Minas)', 'Depositante B (Operador Sul)'];
+
+    // --- ESTADO INICIAL (COMBINADO DA V0.1 A V0.4 + BANCO BD_01.SQL) ---
+    var DEFAULT_STATE = {
+      perfil: null,
+      tab: 'inicio',
+      dep: 0,
+      soAbaixoMin: false,
+      searchQuery: '',
+      
+      // Catálogo de Produtos (Baseado no schema de bd_01.sql)
+      produtos: [
+        { id: 1, nome: 'Parafuso sextavado M8', marca: 'Fixa+', preco_custo: 0.15, preco_venda: 0.35, q: 420, min: 100, u: 'UN', peso_kg: 0.025, ativo: true, loc: 'A-01-01' },
+        { id: 2, nome: 'Fita adesiva 48mm', marca: 'Adelbras', preco_custo: 4.50, preco_venda: 8.90, q: 36, min: 50, u: 'UN', peso_kg: 0.180, ativo: true, loc: 'A-01-02' },
+        { id: 3, nome: 'Luva de proteção M', marca: 'Volk', preco_custo: 12.00, preco_venda: 22.50, q: 12, min: 20, u: 'CX', peso_kg: 0.450, ativo: true, loc: 'B-02-01' },
+        { id: 4, nome: 'Caixa de papelão 40x30', marca: 'Klabin', preco_custo: 2.10, preco_venda: 4.80, q: 260, min: 80, u: 'UN', peso_kg: 0.320, ativo: true, loc: 'A-02-03' },
+        { id: 5, nome: 'Etiqueta térmica 100x50', marca: 'Zebra', preco_custo: 18.00, preco_venda: 32.00, q: 8, min: 10, u: 'RL', peso_kg: 0.250, ativo: true, loc: 'C-01-04' },
+        { id: 6, nome: 'Filme Stretch 500mm', marca: 'PlastFlex', preco_custo: 28.00, preco_venda: 45.00, q: 95, min: 30, u: 'RL', peso_kg: 3.200, ativo: true, loc: 'C-02-01' },
+        { id: 7, nome: 'Palete PBR Madeira', marca: 'PalletSul', preco_custo: 48.00, preco_venda: 75.00, q: 140, min: 50, u: 'UN', peso_kg: 22.000, ativo: true, loc: 'DOCA-01' }
+      ],
+
+      // Usuários do Sistema
+      users: [
+        { id: 1, n: 'Ana (Supervisora)', p: 'Supervisor', a: true },
+        { id: 2, n: 'Bruno (Operador)', p: 'Operador', a: true },
+        { id: 3, n: 'Carla (Conferente)', p: 'Conferente', a: true },
+        { id: 4, n: 'Diego (Auditor)', p: 'Auditor', a: true },
+        { id: 5, n: 'Roberto (Operador Turno B)', p: 'Operador', a: true },
+        { id: 6, n: 'Ex-operador', p: 'Operador', a: false }
+      ],
+
+      // Fila de Aprovações (Supervisor - com regra de dois olhares)
+      aprov: [
+        { id: 1, t: 'Bloqueio do lote L-2231 · avaria física', q: 'Solicitado por Bruno (Operador)', proprio: false, ref: 'L-2231' },
+        { id: 2, t: 'Ajuste de inventário · SKU Fita 48mm · −2 un', q: 'Solicitado por Carla (Conferente)', proprio: false, ref: 'SKU-002' },
+        { id: 3, t: 'Desativar vínculo Cliente X ↔ Depositante A', q: 'Solicitado por Ana (Supervisora)', proprio: true, ref: 'VINC-X' }
+      ],
+
+      // Fila de Tarefas Operacionais
+      tarefas: [
+        { id: 1, t: 'Receber RC-103 · 6 paletes', o: null, tipo: 'Recebimento', status: 'Aberto' },
+        { id: 2, t: 'Separar pedido PD-311 · 14 itens', o: null, tipo: 'Picking', status: 'Aberto' },
+        { id: 3, t: 'Armazenar RC-102 · endereço A-02-03', o: 'Bruno', tipo: 'Armazenagem', status: 'Em andamento' },
+        { id: 4, t: 'Expedição Pedido PD-310 · 8 caixas', o: 'Bruno', tipo: 'Expedição', status: 'Aberto' }
+      ],
+
+      // Avais de Clientes Registrados
+      avais: [
+        { ped: 'PD-310', rep: 'Marcos (Cliente X)', dec: 'Aprovado', evi: 'E-mail comprobatório', data: 'Hoje 09:30' }
+      ],
+
+      // Trilha de Auditoria Geral
+      audit: [
+        { t: 'Operador Bruno concluiu armazenagem parcial RC-102', h: 'Hoje 10:15' },
+        { t: 'Supervisor aprovou bloqueio do lote L-2230', h: 'Hoje 08:30' },
+        { t: 'Conferente Carla registrou aval do pedido PD-310', h: 'Ontem 16:10' },
+        { t: 'Administrador cadastrou o produto Filme Stretch 500mm', h: 'Ontem 14:00' }
+      ],
+
+      // Conferência Ativa
+      conf: {
+        ped: 'PD-311',
+        rep: 'Marcos (Cliente X)',
+        dec: 'Aprovado',
+        evi: 'E-mail'
+      }
+    };
+
+    // --- CARREGAMENTO DO LOCALSTORAGE COM FALLBACK ---
+    var S;
+    try {
+      var saved = localStorage.getItem('ESTOQUE_MAIS_STATE_V5');
+      S = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_STATE));
+    } catch(e) {
+      S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+    function saveState() {
+      try {
+        localStorage.setItem('ESTOQUE_MAIS_STATE_V5', JSON.stringify(S));
+      } catch(e) {}
+    }
+
+    // --- UTILITÁRIOS ---
+    function $(html) { document.getElementById('app').innerHTML = html; }
+    function toast(txt) {
+      var t = document.getElementById('t');
+      t.textContent = txt;
+      t.style.display = 'block';
+      clearTimeout(window.k);
+      window.k = setTimeout(function(){ t.style.display = 'none'; }, 2400);
+    }
+    function auditLog(msg) {
+      S.audit.unshift({ t: msg, h: 'Agora' });
+      saveState();
+    }
+    function resetDemoData() {
+      if(confirm('Deseja restaurar todos os dados originais do protótipo?')) {
+        S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        saveState();
+        draw();
+        toast('Dados restaurados com sucesso.');
+      }
+    }
+
+    // --- NAVEGAÇÃO & LOGIN ---
+    function login() {
+      S.perfil = null;
+      saveState();
+      var h = '<div class="top" style="padding-bottom:28px">'
+        + '<div class="logo">' + LOGO_SVG + 'Estoque Mais</div>'
+        + '<div class="tag">Beta Unificado 0.5</div>'
+        + '<h1>Selecione seu Perfil</h1>'
+        + '<div class="ctx">Acesse com qualquer um dos 5 perfis previstos no modelo WMS.</div>'
+        + '</div>'
+        + '<div class="pf-list">'
+        + '<div class="pf-btn" onclick="selectProfile(\'admin\')"><div class="pf-icon">ADM</div><div class="pf-info"><b>Administrador</b><small>Empresa · Cadastros de produtos, usuários, depositantes e auditoria geral</small></div></div>'
+        + '<div class="pf-btn" onclick="selectProfile(\'sup\')"><div class="pf-icon" style="color:#E0732B;background:#FFF1DC">SUP</div><div class="pf-info"><b>Supervisor</b><small>Aprovações de bloqueios/ajustes (trava 2 olhares) e distribuição de tarefas</small></div></div>'
+        + '<div class="pf-btn" onclick="selectProfile(\'op\')"><div class="pf-icon" style="color:#0F3D4C;background:#E8F3F0">OP</div><div class="pf-info"><b>Operador</b><small>Execução de recebimento, armazenagem, picking, leitura e movimentação</small></div></div>'
+        + '<div class="pf-btn" onclick="selectProfile(\'conf\')"><div class="pf-icon" style="color:#1B6A82;background:#E1F0F5">CONF</div><div class="pf-info"><b>Conferente</b><small>Conferência de carga, divergências e registro formal do aval do cliente</small></div></div>'
+        + '<div class="pf-btn" onclick="selectProfile(\'aud\')"><div class="pf-icon" style="color:#5E3A00;background:#FFF1DC">AUD</div><div class="pf-info"><b>Auditor</b><small>Somente leitura · Posição física vs disponível e trilha de conformidade</small></div></div>'
+        + '</div>'
+        + '<div style="padding:0 20px 24px;text-align:center" class="note">WMS Mobile-First · Ambiente Beta · Repositório: Estoque-Mais</div>';
+      document.getElementById('app').className = 'app no-nav';
+      $(h);
+    }
+
+    function selectProfile(p) {
+      S.perfil = p;
+      S.tab = 'inicio';
+      saveState();
+      draw();
+    }
+
+    function setTab(tab) {
+      S.tab = tab;
+      saveState();
+      draw();
+    }
+
+    // --- COMPONENTES DE UI ---
+    function renderHeader(titulo) {
+      var ctx;
+      if (S.perfil === 'admin') {
+        ctx = '<div class="ctx"><span>Escopo:</span> <b style="color:#fff">Empresa Matriz</b> <span style="font-size:11px;opacity:0.8">(Concessão global e governança)</span></div>';
+      } else {
+        ctx = '<div class="ctx"><span>Depositante:</span>'
+          + '<select aria-label="Depositante ativo" onchange="S.dep=parseInt(this.value);saveState();draw()">'
+          + DEPS.map(function(d,i){ return '<option value="'+i+'"'+(i===S.dep?' selected':'')+'>'+d+'</option>'; }).join('')
+          + '</select></div>';
+      }
+      return '<div class="top">'
+        + '<div class="row">'
+        + '  <div class="logo">' + LOGO_SVG + 'Estoque Mais</div>'
+        + '  <button class="lk" onclick="login()">Trocar perfil</button>'
+        + '</div>'
+        + '<div class="tag">' + PERFIS[S.perfil].n + ' · Beta 0.5</div>'
+        + '<h1>' + titulo + '</h1>'
+        + ctx
+        + '</div>';
+    }
+
+    function renderNav() {
+      var p = S.perfil;
+      var abas = PERFIS[p].abas;
+      var labels = {
+        inicio: 'Início',
+        produtos: 'Produtos',
+        usuarios: 'Usuários',
+        auditoria: 'Auditoria',
+        aprovacoes: 'Aprovações',
+        tarefas: 'Tarefas',
+        movimentar: 'Mover/Ler',
+        conferencia: 'Conferir',
+        avais: 'Avais',
+        estoque: 'Estoque'
+      };
+      var h = '<nav class="bottom-bar">';
+      abas.forEach(function(a) {
+        var active = (S.tab === a) ? ' class="on"' : '';
+        h += '<button' + active + ' onclick="setTab(\'' + a + '\')">'
+          + '<span>' + labels[a] + '</span>'
+          + '</button>';
+      });
+      h += '</nav>';
+      return h;
+    }
+
+    function cardLista(itens, renderFn, msgVazia) {
+      if (!itens || itens.length === 0) {
+        return '<div class="card"><div class="empty-msg">' + (msgVazia || 'Nenhum registro encontrado.') + '</div></div>';
+      }
+      return '<div class="card">' + itens.map(renderFn).join('') + '</div>';
+    }
+
+    // --- TELAS POR PERFIL & ABAS ---
+
+    // 1. TELA DE PRODUTOS (Compartilhada entre Admin e Operador, baseada no bd_01.sql)
+    function renderTelaProdutos(isReadOnly) {
+      var prods = S.produtos.filter(function(p) {
+        var matchNome = p.nome.toLowerCase().includes(S.searchQuery.toLowerCase()) || p.marca.toLowerCase().includes(S.searchQuery.toLowerCase()) || (p.loc && p.loc.toLowerCase().includes(S.searchQuery.toLowerCase()));
+        var matchMin = S.soAbaixoMin ? (p.q < p.min) : true;
+        return matchNome && matchMin;
+      });
+
+      return '<div>'
+        + '<h2>Catálogo de Produtos <span>' + prods.length + ' de ' + S.produtos.length + ' itens</span></h2>'
+        + '<div class="search-box" style="margin-bottom:10px">'
+        + '  <input placeholder="Buscar por produto, marca ou endereço..." value="' + S.searchQuery + '" oninput="S.searchQuery=this.value;draw()">'
+        + '  <button class="btn ' + (S.soAbaixoMin ? 'o' : 'c') + '" onclick="S.soAbaixoMin=!S.soAbaixoMin;draw()">' + (S.soAbaixoMin ? 'Abaixo Mín: SIM' : 'Filtro Mín') + '</button>'
+        + '</div>'
+        + cardLista(prods, function(p) {
+            var isLow = p.q < p.min;
+            return '<div class="it">'
+              + '<div class="d">'
+              + '  <b>' + p.nome + ' <span style="font-weight:400;color:var(--text-muted)">(' + p.marca + ')</span></b>'
+              + '  <span>Endereço: <b>' + (p.loc || 'Sem endereço') + '</b> · Peso: ' + p.peso_kg + 'kg · Custo: R$' + p.preco_custo.toFixed(2) + '</span>'
+              + '</div>'
+              + '<div style="text-align:right">'
+              + '  <b style="font-size:16px;display:block">' + p.q + ' ' + p.u + '</b>'
+              + '  <span class="bd ' + (isLow ? 'a' : '') + '">' + (isLow ? 'Mín: ' + p.min : 'Estável') + '</span>'
+              + '</div>'
+              + (!isReadOnly ? '<button class="btn sm c" style="margin-left:6px" onclick="abrirModalEditarProduto(' + p.id + ')">Editar</button>' : '')
+              + '</div>';
+          })
+        + (!isReadOnly ? '<button class="btn o w" style="margin-top:12px" onclick="abrirModalNovoProduto()">+ Cadastrar Novo Produto</button>' : '')
+        + '</div>';
+    }
+
+    // 2. ADMINISTRAÇÃO
+    function renderAdmin() {
+      var ativos = S.users.filter(function(u){ return u.a; }).length;
+      var baixos = S.produtos.filter(function(p){ return p.q < p.min; }).length;
+      
+      if (S.tab === 'produtos') {
+        return renderHeader('Gestão de Produtos') + '<div class="body">' + renderTelaProdutos(false) + '</div>';
+      }
+      if (S.tab === 'usuarios') {
+        return renderHeader('Usuários e Acessos')
+          + '<div class="body">'
+          + '<h2>Usuários do Sistema <span>' + ativos + ' ativos</span></h2>'
+          + cardLista(S.users, function(u, i) {
+              return '<div class="it">'
+                + '<div class="d"><b>' + u.n + '</b><span class="bd info">' + u.p + '</span></div>'
+                + '<button class="sw ' + (u.a ? 'on' : 'off') + '" onclick="toggleUser(' + i + ')">' + (u.a ? 'Ativo' : 'Inativo') + '</button>'
+                + '</div>';
+            })
+          + '<button class="btn w" onclick="abrirModalNovoUsuario()">+ Novo Usuário</button>'
+          + '</div>';
+      }
+      if (S.tab === 'auditoria') {
+        return renderHeader('Trilha de Auditoria')
+          + '<div class="body">'
+          + '<h2>Histórico de Eventos <span>Tempo real</span></h2>'
+          + cardLista(S.audit, function(a) {
+              return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>';
+            })
+          + '<button class="btn c w" onclick="resetDemoData()">Restaurar Dados Iniciais</button>'
+          + '</div>';
+      }
+      
+      // Default: Início Admin
+      return renderHeader('Painel de Gestão')
+        + '<div class="body">'
+        + '<div class="stats grid-2">'
+        + '  <div class="st" onclick="setTab(\'usuarios\')"><b>' + ativos + '</b><span>Usuários ativos</span></div>'
+        + '  <div class="st"><b>' + DEPS.length + '</b><span>Depositantes (3PL)</span></div>'
+        + '  <div class="st" onclick="setTab(\'produtos\')"><b>' + S.produtos.length + '</b><span>Produtos cadastrados</span></div>'
+        + '  <div class="st ' + (baixos > 0 ? 'al' : '') + '" onclick="S.soAbaixoMin=true;setTab(\'produtos\')"><b>' + baixos + '</b><span>Abaixo do mínimo</span></div>'
+        + '</div>'
+        + '<div class="grid">'
+        + '  <button class="btn" onclick="setTab(\'produtos\')">Produtos & Estoque</button>'
+        + '  <button class="btn" onclick="setTab(\'usuarios\')">Usuários & Perfis</button>'
+        + '  <button class="btn" onclick="abrirModalArmazens()">Armazéns & Endereços</button>'
+        + '  <button class="btn o" onclick="setTab(\'auditoria\')">Auditoria Completa</button>'
+        + '</div>'
+        + '<div><h2>Atividade recente</h2>'
+        + cardLista(S.audit.slice(0, 4), function(a) {
+            return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>';
+          })
+        + '</div>'
+        + '</div>';
+    }
+
+    // 3. SUPERVISOR
+    function renderSupervisor() {
+      var pendentes = S.aprov.length;
+      var semResp = S.tarefas.filter(function(t){ return !t.o; }).length;
+
+      if (S.tab === 'aprovacoes') {
+        return renderHeader('Aprovações Pendentes')
+          + '<div class="body">'
+          + '<h2>Solicitações para Decisão <span>' + pendentes + ' na fila</span></h2>'
+          + cardLista(S.aprov, function(a, i) {
+              return '<div class="it" style="flex-direction:column;align-items:stretch;gap:8px">'
+                + '<div class="d"><b>' + a.t + '</b><span>' + a.q + '</span></div>'
+                + (a.proprio 
+                    ? '<div class="ro" style="border-radius:8px"><b>Regra de 2 Olhares:</b> Você não aprova a própria solicitação. Aguarda outro supervisor.</div>'
+                    : '<div style="display:flex;gap:8px"><button class="btn o" style="flex:1" onclick="aprovarSolicitacao(' + i + ',true)">Aprovar</button><button class="btn c" style="flex:1" onclick="aprovarSolicitacao(' + i + ',false)">Recusar</button></div>')
+                + '</div>';
+            })
+          + '</div>';
+      }
+      if (S.tab === 'tarefas') {
+        return renderHeader('Distribuição de Tarefas')
+          + '<div class="body">'
+          + '<h2>Fila do Turno <span>' + semResp + ' sem operador</span></h2>'
+          + cardLista(S.tarefas, function(t, i) {
+              return '<div class="it" style="flex-direction:column;align-items:stretch;gap:8px">'
+                + '<div class="d"><b>' + t.t + '</b><span>Status: ' + t.status + ' · Tipo: ' + t.tipo + '</span></div>'
+                + '<div style="display:flex;gap:8px;align-items:center">'
+                + (t.o 
+                    ? '<span class="bd info" style="flex:1;padding:8px">Responsável: <b>' + t.o + '</b></span>'
+                    : '<select id="op_sel_' + i + '" style="flex:1;min-height:40px;border-radius:8px;border:1px solid var(--border-dark);padding:0 8px"><option>Bruno</option><option>Roberto (Turno B)</option></select><button class="btn o sm" onclick="atribuirTarefa(' + i + ')">Atribuir</button>')
+                + '</div>'
+                + '</div>';
+            })
+          + '<button class="btn w" onclick="abrirModalNovaTarefa()">+ Criar Nova Tarefa</button>'
+          + '</div>';
+      }
+      if (S.tab === 'auditoria') {
+        return renderHeader('Auditoria Operacional')
+          + '<div class="body">'
+          + '<h2>Trilha de Supervisão</h2>'
+          + cardLista(S.audit, function(a) { return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>'; })
+          + '</div>';
+      }
+
+      // Default: Início Supervisor
+      return renderHeader('Gestão Operacional')
+        + '<div class="body">'
+        + '<div class="stats grid-2">'
+        + '  <div class="st ' + (pendentes > 0 ? 'al' : '') + '" onclick="setTab(\'aprovacoes\')"><b>' + pendentes + '</b><span>Aprovações pendentes</span></div>'
+        + '  <div class="st ' + (semResp > 0 ? 'al' : '') + '" onclick="setTab(\'tarefas\')"><b>' + semResp + '</b><span>Tarefas sem responsável</span></div>'
+        + '</div>'
+        + '<div class="grid">'
+        + '  <button class="btn" onclick="setTab(\'aprovacoes\')">Fila de Aprovações</button>'
+        + '  <button class="btn" onclick="setTab(\'tarefas\')">Distribuir Tarefas</button>'
+        + '</div>'
+        + '<div><h2>Tarefas em andamento</h2>'
+        + cardLista(S.tarefas.filter(function(t){ return t.o; }), function(t) {
+            return '<div class="it"><div class="d"><b>' + t.t + '</b><span>Responsável: ' + t.o + ' (' + t.status + ')</span></div></div>';
+          })
+        + '</div>'
+        + '</div>';
+    }
+
+    // 4. OPERADOR (Chão de Fábrica com Painel de Turno da v0.2 + Execução da v0.4)
+    function renderOperador() {
+      var minhas = S.tarefas.filter(function(t){ return t.o === 'Bruno' || t.o === null; });
+      var emAberto = minhas.filter(function(t){ return t.status !== 'Concluída'; }).length;
+      var baixos = S.produtos.filter(function(p){ return p.q < p.min; }).length;
+
+      if (S.tab === 'tarefas') {
+        return renderHeader('Minhas Tarefas')
+          + '<div class="body">'
+          + '<h2>Tarefas do Turno <span>' + emAberto + ' em aberto</span></h2>'
+          + cardLista(minhas, function(t, i) {
+              var isDone = t.status === 'Concluída';
+              return '<div class="it">'
+                + '<div class="d"><b>' + t.t + '</b><span class="bd ' + (isDone ? '' : 'a') + '">' + t.status + '</span></div>'
+                + (!isDone ? '<button class="btn ' + (t.status === 'Aberto' ? 'o' : '') + ' sm" onclick="avancarTarefa(' + t.id + ')">' + (t.status === 'Aberto' ? 'Iniciar' : 'Concluir') + '</button>' : '<span style="color:var(--success-text);font-weight:700">✓ Feita</span>')
+                + '</div>';
+            })
+          + '</div>';
+      }
+      if (S.tab === 'movimentar') {
+        return renderHeader('Movimentação & Leitura')
+          + '<div class="body">'
+          + '<h2>Operações de Chão de Fábrica</h2>'
+          + '<div class="grid">'
+          + '  <button class="btn o" style="min-height:60px" onclick="abrirModalScanner()">Ler Código de Barras / QR</button>'
+          + '  <button class="btn" style="min-height:60px" onclick="abrirModalMoverItem()">Mover Item / Palete</button>'
+          + '  <button class="btn c" style="min-height:60px" onclick="abrirModalBloqueio()">Solicitar Bloqueio de Lote</button>'
+          + '  <button class="btn c" style="min-height:60px" onclick="abrirModalOcorrencia()">Registrar Ocorrência</button>'
+          + '</div>'
+          + '<div class="card" style="padding:14px"><div class="note"><b>Dica de operação:</b> Utilize a leitura de código para validar endereços de origem e destino nas tarefas de picking e armazenagem.</div></div>'
+          + '</div>';
+      }
+      if (S.tab === 'produtos') {
+        return renderHeader('Consulta de Produtos') + '<div class="body">' + renderTelaProdutos(true) + '</div>';
+      }
+
+      // Default: Início Operador (Painel do Turno v0.2 consolidado)
+      return renderHeader('Painel do Turno')
+        + '<div class="body">'
+        + '<div class="stats grid-3">'
+        + '  <div class="st" onclick="setTab(\'tarefas\')"><b>2</b><span>A receber</span></div>'
+        + '  <div class="st" onclick="setTab(\'tarefas\')"><b>3</b><span>A expedir</span></div>'
+        + '  <div class="st ' + (baixos > 0 ? 'al' : '') + '" onclick="S.soAbaixoMin=true;setTab(\'produtos\')"><b>' + baixos + '</b><span>Abaixo do mín.</span></div>'
+        + '</div>'
+        + '<div class="grid">'
+        + '  <button class="btn" style="min-height:56px" onclick="setTab(\'tarefas\')">Executar Tarefas</button>'
+        + '  <button class="btn o" style="min-height:56px" onclick="abrirModalScanner()">Ler Código</button>'
+        + '</div>'
+        + '<div class="search-box">'
+        + '  <input placeholder="Consulta rápida de produto ou código..." onkeydown="if(event.key===\'Enter\'){S.searchQuery=this.value;setTab(\'produtos\');}">'
+        + '  <button class="btn sm" onclick="abrirModalScanner()">Ler</button>'
+        + '</div>'
+        + '<div><h2>Minhas tarefas prioritárias</h2>'
+        + cardLista(minhas.slice(0, 3), function(t) {
+            return '<div class="it"><div class="d"><b>' + t.t + '</b><span class="bd ' + (t.status==='Concluída'?'':'a') + '">' + t.status + '</span></div></div>';
+          })
+        + '</div>'
+        + '</div>';
+    }
+
+    // 5. CONFERENTE
+    function renderConferente() {
+      if (S.tab === 'avais') {
+        return renderHeader('Avais Registrados')
+          + '<div class="body">'
+          + '<h2>Histórico de Avais Formais</h2>'
+          + cardLista(S.avais, function(a) {
+              return '<div class="it"><div class="d"><b>' + a.ped + ' · ' + a.rep + '</b><span>' + a.dec + ' (' + a.evi + ') · ' + a.data + '</span></div><span class="bd ' + (a.dec === 'Aprovado' ? '' : 'r') + '">' + a.dec + '</span></div>';
+            })
+          + '</div>';
+      }
+      if (S.tab === 'auditoria') {
+        return renderHeader('Auditoria de Conferência')
+          + '<div class="body">'
+          + '<h2>Conferências e Eventos</h2>'
+          + cardLista(S.audit, function(a) { return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>'; })
+          + '</div>';
+      }
+
+      // Default: Tela de Conferência e Aval
+      var c = S.conf;
+      return renderHeader('Conferência e Aval')
+        + '<div class="body">'
+        + '<div class="stats grid-2">'
+        + '  <div class="st al"><b>1</b><span>Divergência ativa</span></div>'
+        + '  <div class="st"><b>2</b><span>Conferências pendentes</span></div>'
+        + '</div>'
+        + '<div><h2>Divergências Encontradas</h2>'
+        + '  <div class="card">'
+        + '    <div class="it">'
+        + '      <div class="d"><b>RC-102 · Fita adesiva 48mm</b><span>Esperado: 120 un · Recebido físico: 118 un</span></div>'
+        + '      <span class="bd r">−2 un</span>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>'
+        + '<div><h2>Registrar Aval Formal do Cliente</h2>'
+        + '  <div class="card frm">'
+        + '    <label>Pedido / Carga'
+        + '      <select id="conf_ped" onchange="S.conf.ped=this.value"><option>PD-311</option><option>PD-312</option><option>RC-102 (Divergência)</option></select>'
+        + '    </label>'
+        + '    <label>Representante Autorizado'
+        + '      <select id="conf_rep" onchange="S.conf.rep=this.value"><option>Marcos (Cliente X)</option><option>Paula (Cliente Y)</option></select>'
+        + '    </label>'
+        + '    <label>Decisão do Representante</label>'
+        + '    <div class="opts">'
+        + '      <button type="button" class="' + (c.dec === 'Aprovado' ? 'on' : '') + '" onclick="S.conf.dec=\'Aprovado\';draw()">Aprovado</button>'
+        + '      <button type="button" class="' + (c.dec === 'Reprovado' ? 'on' : '') + '" onclick="S.conf.dec=\'Reprovado\';draw()">Reprovado</button>'
+        + '    </div>'
+        + '    <label>Evidência Comprobatória'
+        + '      <select id="conf_evi" onchange="S.conf.evi=this.value"><option>E-mail formal</option><option>Assinatura digitalizada</option><option>Documento físico assinado</option></select>'
+        + '    </label>'
+        + '    <button class="btn o w" style="min-height:50px" onclick="registrarAval()">Registrar Aval Formal</button>'
+        + '    <div class="note"><b>Regra de conformidade:</b> Você transcreve a decisão do representante do cliente; não decide pelo cliente.</div>'
+        + '  </div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    // 6. AUDITOR (Somente Leitura e Fórmulas WMS)
+    function renderAuditor() {
+      var totalFisico = S.produtos.reduce(function(acc, p){ return acc + p.q; }, 0);
+      var totalReservado = 180;
+      var totalBloqueado = 36;
+      var totalDisponivel = totalFisico - totalReservado - totalBloqueado;
+
+      if (S.tab === 'estoque') {
+        return renderHeader('Posição Detalhada')
+          + '<div class="body">'
+          + renderTelaProdutos(true)
+          + '</div>';
+      }
+
+      // Default: Consulta de Auditoria
+      return renderHeader('Auditoria e Compliance')
+        + '<div class="ro">Somente Leitura · Acesso de auditoria e conformidade fiscal/física</div>'
+        + '<div class="body">'
+        + '<div class="stats grid-3">'
+        + '  <div class="st"><b>' + totalFisico + '</b><span>Estoque Físico</span></div>'
+        + '  <div class="st"><b>' + totalReservado + '</b><span>Reservado</span></div>'
+        + '  <div class="st"><b>' + totalBloqueado + '</b><span>Bloqueado</span></div>'
+        + '</div>'
+        + '<div class="card" style="padding:14px;background:#E8F3F0;border:1px solid #14473D">'
+        + '  <b style="font-size:24px;color:#14473D">' + totalDisponivel + ' unidades</b>'
+        + '  <span style="display:block;font-size:12px;color:#14473D;margin-top:2px">Disponível para venda e picking (Físico − Reservado − Bloqueado)</span>'
+        + '</div>'
+        + '<div><h2>Trilha Completa de Auditoria</h2>'
+        + cardLista(S.audit, function(a) { return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>'; })
+        + '</div>'
+        + '</div>';
+    }
+
+    // --- AÇÕES & MUTATIONS ---
+    function toggleUser(idx) {
+      S.users[idx].a = !S.users[idx].a;
+      auditLog('Administrador alterou status de ' + S.users[idx].n + ' para ' + (S.users[idx].a ? 'ativo' : 'inativo'));
+      draw();
+    }
+
+    function aprovarSolicitacao(idx, isOk) {
+      var item = S.aprov.splice(idx, 1)[0];
+      auditLog('Supervisor ' + (isOk ? 'aprovou' : 'recusou') + ': ' + item.t);
+      toast(isOk ? 'Aprovado com sucesso!' : 'Solicitação recusada.');
+      draw();
+    }
+
+    function atribuirTarefa(idx) {
+      var sel = document.getElementById('op_sel_' + idx);
+      if (sel) {
+        S.tarefas[idx].o = sel.value;
+        S.tarefas[idx].status = 'Atribuída';
+        auditLog('Supervisor atribuiu tarefa "' + S.tarefas[idx].t + '" para ' + sel.value);
+        toast('Tarefa atribuída para ' + sel.value);
+        draw();
+      }
+    }
+
+    function avancarTarefa(id) {
+      var t = S.tarefas.find(function(item){ return item.id === id; });
+      if (t) {
+        if (t.status === 'Aberto' || t.status === 'Atribuída') {
+          t.status = 'Em andamento';
+          auditLog('Operador iniciou execução de: ' + t.t);
+          toast('Tarefa em andamento.');
+        } else if (t.status === 'Em andamento') {
+          t.status = 'Concluída';
+          auditLog('Operador concluiu: ' + t.t);
+          toast('Tarefa concluída com sucesso!');
+        }
+        draw();
+      }
+    }
+
+    function registrarAval() {
+      var c = S.conf;
+      S.avais.unshift({
+        ped: c.ped,
+        rep: c.rep,
+        dec: c.dec,
+        evi: c.evi,
+        data: 'Agora'
+      });
+      auditLog('Conferente registrou aval do pedido ' + c.ped + ': ' + c.dec + ' (' + c.evi + ')');
+      toast('Aval formal registrado na trilha.');
+      draw();
+    }
+
+    // --- MODAIS INTERATIVOS ---
+    function fecharModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+
+    function abrirModalScanner() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet">'
+        + '  <div class="modal-head"><h3>Leitor de Código / QR</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <div class="note">Simule a leitura ótica apontando para códigos de barras ou endereços de gôndola:</div>'
+        + '  <div class="grid">'
+        + '    <button class="btn c" onclick="simularLeitura(\'SKU-002 (Fita 48mm)\')">Código SKU-002</button>'
+        + '    <button class="btn c" onclick="simularLeitura(\'Endereço A-01-02\')">Gôndola A-01-02</button>'
+        + '    <button class="btn c" onclick="simularLeitura(\'Palete RC-102\')">Palete RC-102</button>'
+        + '    <button class="btn c" onclick="simularLeitura(\'Pedido PD-311\')">Pedido PD-311</button>'
+        + '  </div>'
+        + '  <input id="custom_code" placeholder="Ou digite o código manualmente..." style="min-height:44px;border:1px solid var(--border-dark);border-radius:10px;padding:0 12px">'
+        + '  <button class="btn o w" onclick="simularLeitura(document.getElementById(\'custom_code\').value || \'CÓDIGO-LIDO-OK\')">Validar Código</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function simularLeitura(codigo) {
+      fecharModal();
+      auditLog('Operador efetuou leitura de código: ' + codigo);
+      toast('Código lido: ' + codigo);
+    }
+
+    function abrirModalMoverItem() {
+      var optsProds = S.produtos.map(function(p){ return '<option value="'+p.id+'">'+p.nome+' (Estoque: '+p.q+' em '+p.loc+')</option>'; }).join('');
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Movimentação Interna</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Produto a movimentar<select id="mov_prod">' + optsProds + '</select></label>'
+        + '  <label>Quantidade<input type="number" id="mov_qtd" value="10" min="1"></label>'
+        + '  <label>Endereço de Destino<input id="mov_dest" value="B-03-02" placeholder="Ex: B-01-04"></label>'
+        + '  <button class="btn o w" onclick="executarMovimentacao()">Confirmar Movimentação</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function executarMovimentacao() {
+      var prodId = parseInt(document.getElementById('mov_prod').value);
+      var qtd = parseInt(document.getElementById('mov_qtd').value) || 1;
+      var dest = document.getElementById('mov_dest').value || 'A-01-01';
+      var prod = S.produtos.find(function(p){ return p.id === prodId; });
+      if (prod) {
+        var antiga = prod.loc;
+        prod.loc = dest;
+        fecharModal();
+        auditLog('Operador moveu ' + qtd + ' un de "' + prod.nome + '" de ' + antiga + ' para ' + dest);
+        toast('Item movimentado para ' + dest);
+        draw();
+      }
+    }
+
+    function abrirModalBloqueio() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Solicitar Bloqueio de Lote</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Identificação do Lote / SKU<input id="blq_lote" value="L-4091" placeholder="Ex: L-4091"></label>'
+        + '  <label>Motivo da Restrição<select id="blq_motivo"><option>Avaria física na embalagem</option><option>Divergência de validade</option><option>Suspeita de contaminação/vício</option></select></label>'
+        + '  <button class="btn danger w" onclick="confirmarBloqueio()">Enviar para Aval do Supervisor</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function confirmarBloqueio() {
+      var lote = document.getElementById('blq_lote').value || 'LOTE-X';
+      var mot = document.getElementById('blq_motivo').value;
+      S.aprov.unshift({
+        id: Date.now(),
+        t: 'Bloqueio do lote ' + lote + ' · ' + mot,
+        q: 'Solicitado por Operador (Chão de Fábrica)',
+        proprio: false,
+        ref: lote
+      });
+      fecharModal();
+      auditLog('Operador solicitou bloqueio de lote ' + lote + ' (' + mot + ')');
+      toast('Solicitação encaminhada ao Supervisor.');
+      draw();
+    }
+
+    function abrirModalOcorrencia() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Registrar Ocorrência</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Tipo de Ocorrência<select id="oco_tipo"><option>Doca obstruída</option><option>Produto sem etiqueta / código ilegível</option><option>Falta de espaço no porta-paletes</option></select></label>'
+        + '  <label>Observação adicional<input id="oco_obs" placeholder="Detalhes da ocorrência..."></label>'
+        + '  <button class="btn o w" onclick="fecharModal();auditLog(\'Ocorrência registrada: \' + document.getElementById(\'oco_tipo\').value);toast(\'Ocorrência gravada na auditoria.\')">Registrar</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function abrirModalArmazens() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet">'
+        + '  <div class="modal-head"><h3>Armazéns & Endereços</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <div class="note">Estrutura de endereçamento do armazém de Betim/Contagem:</div>'
+        + '  <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px">'
+        + '    <div><b>Rua A:</b> Porta-paletes · 4 níveis · 80% ocupação</div>'
+        + '    <div><b>Rua B:</b> Estocagem leve e caixaria · 65% ocupação</div>'
+        + '    <div><b>Rua C:</b> Produtos pesados e paletes fechados</div>'
+        + '    <div><b>Docas 01 a 04:</b> Área de recebimento e expedição</div>'
+        + '  </div>'
+        + '  <button class="btn w" onclick="fecharModal()">Fechar</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function abrirModalNovoProduto() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Novo Produto</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Nome do Produto<input id="np_nome" placeholder="Ex: Bobina Plástica"></label>'
+        + '  <label>Marca / Fabricante<input id="np_marca" placeholder="Ex: Tigre"></label>'
+        + '  <div class="grid">'
+        + '    <label>Qtd Inicial<input type="number" id="np_qtd" value="50"></label>'
+        + '    <label>Estoque Mínimo<input type="number" id="np_min" value="15"></label>'
+        + '  </div>'
+        + '  <div class="grid">'
+        + '    <label>Unidade<select id="np_u"><option>UN</option><option>CX</option><option>RL</option><option>KG</option></select></label>'
+        + '    <label>Endereço<input id="np_loc" value="A-03-01"></label>'
+        + '  </div>'
+        + '  <button class="btn o w" onclick="salvarNovoProduto()">Salvar Produto</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function salvarNovoProduto() {
+      var nome = document.getElementById('np_nome').value;
+      if (!nome) return toast('Informe o nome do produto.');
+      var novo = {
+        id: Date.now(),
+        nome: nome,
+        marca: document.getElementById('np_marca').value || 'Genérica',
+        preco_custo: 10.00,
+        preco_venda: 18.00,
+        q: parseInt(document.getElementById('np_qtd').value) || 0,
+        min: parseInt(document.getElementById('np_min').value) || 1,
+        u: document.getElementById('np_u').value,
+        peso_kg: 0.500,
+        ativo: true,
+        loc: document.getElementById('np_loc').value || 'DOCA'
+      };
+      S.produtos.unshift(novo);
+      fecharModal();
+      auditLog('Administrador cadastrou o produto "' + novo.nome + '"');
+      toast('Produto cadastrado com sucesso!');
+      draw();
+    }
+
+    function abrirModalNovoUsuario() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Novo Usuário</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Nome do Colaborador<input id="nu_nome" placeholder="Ex: Lucas Pereira"></label>'
+        + '  <label>Perfil de Acesso<select id="nu_perfil"><option>Operador</option><option>Supervisor</option><option>Conferente</option><option>Auditor</option></select></label>'
+        + '  <button class="btn o w" onclick="salvarNovoUsuario()">Cadastrar Usuário</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function salvarNovoUsuario() {
+      var nome = document.getElementById('nu_nome').value;
+      if (!nome) return toast('Informe o nome do colaborador.');
+      var perfil = document.getElementById('nu_perfil').value;
+      S.users.push({ id: Date.now(), n: nome, p: perfil, a: true });
+      fecharModal();
+      auditLog('Administrador adicionou usuário "' + nome + '" com perfil ' + perfil);
+      toast('Usuário cadastrado com sucesso!');
+      draw();
+    }
+
+    function abrirModalNovaTarefa() {
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Nova Tarefa de Turno</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Descrição da Tarefa<input id="nt_desc" placeholder="Ex: Separar pedido PD-315"></label>'
+        + '  <label>Tipo de Operação<select id="nt_tipo"><option>Picking</option><option>Recebimento</option><option>Armazenagem</option><option>Expedição</option><option>Inventário</option></select></label>'
+        + '  <button class="btn o w" onclick="salvarNovaTarefa()">Criar Tarefa</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function salvarNovaTarefa() {
+      var desc = document.getElementById('nt_desc').value;
+      if (!desc) return toast('Informe a descrição da tarefa.');
+      var tipo = document.getElementById('nt_tipo').value;
+      S.tarefas.unshift({ id: Date.now(), t: desc, o: null, tipo: tipo, status: 'Aberto' });
+      fecharModal();
+      auditLog('Supervisor criou tarefa: ' + desc);
+      toast('Tarefa incluída na fila do turno!');
+      draw();
+    }
+
+    // --- RENDERIZAÇÃO PRINCIPAL ---
+    function draw() {
+      if (!S.perfil) {
+        return login();
+      }
+      document.getElementById('app').className = 'app';
+      var html = '';
+      if (S.perfil === 'admin') html = renderAdmin();
+      else if (S.perfil === 'sup') html = renderSupervisor();
+      else if (S.perfil === 'op') html = renderOperador();
+      else if (S.perfil === 'conf') html = renderConferente();
+      else if (S.perfil === 'aud') html = renderAuditor();
+      
+      html += renderNav();
+      $(html);
+    }
+
+    // Inicialização
+    draw();
+  </script>
+</body>
+</html>

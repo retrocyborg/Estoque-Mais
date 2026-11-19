@@ -1,0 +1,31 @@
+filters:
+  and:
+    - file.inFolder('projects/estoque mais')
+views:
+  - type: table
+    name: Projeto Estoque Mais
+    filters:
+      and:
+        - file.ext == 'md'
+    columns:
+      - file.name
+      - file.path
+      - file.mtime
+  - type: table
+    name: PDFs do projeto
+    filters:
+      and:
+        - file.ext == 'pdf'
+    columns:
+      - file.name
+      - file.path
+      - file.mtime
+  - type: table
+    name: Apresentações do projeto
+    filters:
+      and:
+        - file.ext == 'pptx'
+    columns:
+      - file.name
+      - file.path
+      - file.mtime
