@@ -1,0 +1,23 @@
+{
+  "name": "estoque-mais",
+  "version": "0.5.0",
+  "description": "Sistema WMS Mobile-First e Desktop para Pequenos e Médios Operadores Logísticos",
+  "main": "app_src/assets/index.html",
+  "scripts": {
+    "start": "bash scripts/run_desktop.sh",
+    "desktop": "bash scripts/run_desktop.sh",
+    "build:apk": "bash scripts/build_apk.sh",
+    "setup:db": "bash scripts/setup_db.sh"
+  },
+  "keywords": [
+    "wms",
+    "logistica",
+    "estoque",
+    "3pl",
+    "mobile",
+    "desktop",
+    "pwa"
+  ],
+  "author": "Estoque Mais Team",
+  "license": "MIT"
+}

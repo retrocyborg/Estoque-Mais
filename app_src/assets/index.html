@@ -3,7 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <title>Estoque Mais - Beta Unificado</title>
+  <title>Estoque Mais - WMS Mobile & Desktop</title>
+  
+  <!-- PWA & Desktop Web Support -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="theme-color" content="#0F3D4C">
+  <meta name="description" content="Sistema WMS Mobile-First e Desktop para Pequenos e Médios Operadores Logísticos (3PLs)">
+  
   <style>
     :root {
       --primary: #0F3D4C;
@@ -47,11 +54,13 @@
       outline: none;
     }
     button { cursor: pointer; border: 0; }
+    
+    /* App Layout */
     .app {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      padding-bottom: 74px; /* space for bottom nav */
+      padding-bottom: 74px; /* espaço para barra móvel inferior */
     }
     .app.no-nav {
       padding-bottom: 20px;
@@ -66,6 +75,11 @@
       position: sticky;
       top: 0;
       z-index: 20;
+    }
+    .top-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
     }
     .top .row {
       display: flex;
@@ -369,6 +383,9 @@
       flex-direction: column;
       gap: 12px;
       padding: 20px 16px;
+      max-width: 700px;
+      margin: 0 auto;
+      width: 100%;
     }
     .pf-btn {
       background: var(--surface);
@@ -382,6 +399,7 @@
       gap: 14px;
       transition: transform 0.1s, border-color 0.15s;
     }
+    .pf-btn:hover { border-color: var(--accent); }
     .pf-btn:active { transform: scale(0.98); border-color: var(--primary); }
     .pf-icon {
       width: 44px;
@@ -413,7 +431,7 @@
       font-size: 13px;
     }
     
-    /* Bottom Navigation Bar */
+    /* Bottom Navigation Bar (Mobile) */
     nav.bottom-bar {
       position: fixed;
       bottom: 0;
@@ -442,17 +460,33 @@
       gap: 3px;
       border-radius: 8px;
     }
-    nav.bottom-bar button svg {
-      width: 20px;
-      height: 20px;
-      stroke: currentColor;
-      stroke-width: 2;
-      fill: none;
-    }
     nav.bottom-bar button.on {
       color: var(--primary);
       font-weight: 700;
     }
+
+    /* Top Desktop Navigation Tabs */
+    .desktop-nav {
+      display: none;
+      gap: 6px;
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 10px;
+    }
+    .desktop-nav button {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .desktop-nav button:hover { background: rgba(255,255,255,0.18); }
+    .desktop-nav button.on { background: var(--accent); color: #fff; }
     
     /* Modals / Overlays */
     .modal-backdrop {
@@ -505,6 +539,8 @@
       left: 16px;
       right: 16px;
       bottom: 84px;
+      max-width: 420px;
+      margin: 0 auto;
       background: var(--primary-dark);
       color: #fff;
       padding: 12px 16px;
@@ -521,6 +557,94 @@
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Table for Desktop View */
+    .desktop-table-container {
+      display: none;
+      width: 100%;
+      overflow-x: auto;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    table.desktop-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    table.desktop-table th {
+      background: #F8FAFB;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border);
+    }
+    table.desktop-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    table.desktop-table tr:hover td {
+      background: #FBFDFE;
+    }
+
+    /* ==========================================================================
+       ADAPTAÇÃO RESPONSIVA PARA COMPUTADOR / DESKTOP (Largura >= 840px)
+       ========================================================================== */
+    @media (min-width: 840px) {
+      .app {
+        padding-bottom: 30px; /* Sem necessidade do padding da barra inferior móvel */
+      }
+      .top {
+        padding: 20px 32px 14px;
+      }
+      .desktop-nav {
+        display: flex; /* Exibe barra de abas no topo para desktop */
+      }
+      nav.bottom-bar {
+        display: none; /* Oculta a barra inferior de celular no computador */
+      }
+      .body {
+        max-width: 1160px;
+        padding: 28px 32px;
+        gap: 22px;
+      }
+      .stats.grid-2 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .stats.grid-3 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .desktop-table-container {
+        display: block; /* No desktop exibe a tabela ampla de dados */
+      }
+      .mobile-card-list {
+        display: none; /* No desktop substitui a lista estreita por tabela */
+      }
+      .modal-backdrop {
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-sheet {
+        max-width: 540px;
+        border-radius: var(--radius-lg);
+        margin: auto;
+        animation: popCenter 0.15s ease-out;
+      }
+      @keyframes popCenter {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      #t {
+        bottom: 24px;
+        right: 24px;
+        left: auto;
+      }
+    }
   </style>
 </head>
 <body>
@@ -529,6 +653,11 @@
   <div id="modal-container"></div>
 
   <script>
+    // --- SERVICE WORKER (PWA DESKTOP) ---
+    if ('serviceWorker' in navigator && (window.location.protocol.startsWith('http') || window.location.protocol.startsWith('https'))) {
+      navigator.serviceWorker.register('./sw.js').catch(function(){});
+    }
+
     // --- ICONES & MARCA ---
     var LOGO_SVG = '<svg width="26" height="26" viewBox="0 0 100 100"><polygon points="50,8 88,29 50,50 12,29" fill="#E0732B"/><polygon points="12,29 50,50 50,92 12,71" fill="#0B2D39" stroke="#3B6877" stroke-width="2"/><polygon points="88,29 50,50 50,92 88,71" fill="#1B6A82"/></svg>';
     var PERFIS = {
@@ -606,7 +735,7 @@
       }
     };
 
-    // --- CARREGAMENTO DO LOCALSTORAGE COM FALLBACK ---
+    // --- LOCALSTORAGE & PERSISTÊNCIA ---
     var S;
     try {
       var saved = localStorage.getItem('ESTOQUE_MAIS_STATE_V5');
@@ -619,6 +748,16 @@
         localStorage.setItem('ESTOQUE_MAIS_STATE_V5', JSON.stringify(S));
       } catch(e) {}
     }
+
+    // --- ATALHOS DE TECLADO DESKTOP ---
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') fecharModal();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        var search = document.querySelector('input[placeholder*="Buscar"]');
+        if (search) search.focus();
+      }
+    });
 
     // --- UTILITÁRIOS ---
     function $(html) { document.getElementById('app').innerHTML = html; }
@@ -647,11 +786,12 @@
       S.perfil = null;
       saveState();
       var h = '<div class="top" style="padding-bottom:28px">'
+        + '<div class="top-inner">'
         + '<div class="logo">' + LOGO_SVG + 'Estoque Mais</div>'
-        + '<div class="tag">Beta Unificado 0.5</div>'
+        + '<div class="tag">WMS Mobile & Desktop · Beta 0.5</div>'
         + '<h1>Selecione seu Perfil</h1>'
         + '<div class="ctx">Acesse com qualquer um dos 5 perfis previstos no modelo WMS.</div>'
-        + '</div>'
+        + '</div></div>'
         + '<div class="pf-list">'
         + '<div class="pf-btn" onclick="selectProfile(\'admin\')"><div class="pf-icon">ADM</div><div class="pf-info"><b>Administrador</b><small>Empresa · Cadastros de produtos, usuários, depositantes e auditoria geral</small></div></div>'
         + '<div class="pf-btn" onclick="selectProfile(\'sup\')"><div class="pf-icon" style="color:#E0732B;background:#FFF1DC">SUP</div><div class="pf-info"><b>Supervisor</b><small>Aprovações de bloqueios/ajustes (trava 2 olhares) e distribuição de tarefas</small></div></div>'
@@ -659,7 +799,7 @@
         + '<div class="pf-btn" onclick="selectProfile(\'conf\')"><div class="pf-icon" style="color:#1B6A82;background:#E1F0F5">CONF</div><div class="pf-info"><b>Conferente</b><small>Conferência de carga, divergências e registro formal do aval do cliente</small></div></div>'
         + '<div class="pf-btn" onclick="selectProfile(\'aud\')"><div class="pf-icon" style="color:#5E3A00;background:#FFF1DC">AUD</div><div class="pf-info"><b>Auditor</b><small>Somente leitura · Posição física vs disponível e trilha de conformidade</small></div></div>'
         + '</div>'
-        + '<div style="padding:0 20px 24px;text-align:center" class="note">WMS Mobile-First · Ambiente Beta · Repositório: Estoque-Mais</div>';
+        + '<div style="padding:0 20px 24px;text-align:center" class="note">Compatível com Android (APK) e Computador (Web / PWA) · Repositório: Estoque-Mais</div>';
       document.getElementById('app').className = 'app no-nav';
       $(h);
     }
@@ -688,15 +828,43 @@
           + DEPS.map(function(d,i){ return '<option value="'+i+'"'+(i===S.dep?' selected':'')+'>'+d+'</option>'; }).join('')
           + '</select></div>';
       }
+
+      // Desktop Tab Buttons
+      var p = S.perfil;
+      var abas = PERFIS[p].abas;
+      var labels = {
+        inicio: 'Início / Painel',
+        produtos: 'Produtos & Estoque',
+        usuarios: 'Usuários & Perfis',
+        auditoria: 'Trilha de Auditoria',
+        aprovacoes: 'Aprovações Pendentes',
+        tarefas: 'Fila de Tarefas',
+        movimentar: 'Mover / Leitor Ótico',
+        conferencia: 'Conferência & Divergências',
+        avais: 'Avais de Clientes',
+        estoque: 'Posição de Estoque'
+      };
+
+      var desktopNavHtml = '<div class="desktop-nav">';
+      abas.forEach(function(a) {
+        desktopNavHtml += '<button class="' + (S.tab === a ? 'on' : '') + '" onclick="setTab(\'' + a + '\')">' + labels[a] + '</button>';
+      });
+      desktopNavHtml += '</div>';
+
       return '<div class="top">'
+        + '<div class="top-inner">'
         + '<div class="row">'
         + '  <div class="logo">' + LOGO_SVG + 'Estoque Mais</div>'
-        + '  <button class="lk" onclick="login()">Trocar perfil</button>'
+        + '  <div style="display:flex;gap:10px;align-items:center">'
+        + '    <span class="bd info" style="display:none;background:rgba(255,255,255,0.15);color:#fff" id="desktop-indicator">Desktop Ativo</span>'
+        + '    <button class="lk" onclick="login()">Trocar perfil</button>'
+        + '  </div>'
         + '</div>'
-        + '<div class="tag">' + PERFIS[S.perfil].n + ' · Beta 0.5</div>'
+        + '<div class="tag">' + PERFIS[S.perfil].n + ' · Beta 0.5 (Desktop & Mobile)</div>'
         + '<h1>' + titulo + '</h1>'
         + ctx
-        + '</div>';
+        + desktopNavHtml
+        + '</div></div>';
     }
 
     function renderNav() {
@@ -734,7 +902,7 @@
 
     // --- TELAS POR PERFIL & ABAS ---
 
-    // 1. TELA DE PRODUTOS (Compartilhada entre Admin e Operador, baseada no bd_01.sql)
+    // 1. TELA DE PRODUTOS (Com Tabela Responsiva para Desktop + Lista para Mobile)
     function renderTelaProdutos(isReadOnly) {
       var prods = S.produtos.filter(function(p) {
         var matchNome = p.nome.toLowerCase().includes(S.searchQuery.toLowerCase()) || p.marca.toLowerCase().includes(S.searchQuery.toLowerCase()) || (p.loc && p.loc.toLowerCase().includes(S.searchQuery.toLowerCase()));
@@ -742,18 +910,41 @@
         return matchNome && matchMin;
       });
 
-      return '<div>'
-        + '<h2>Catálogo de Produtos <span>' + prods.length + ' de ' + S.produtos.length + ' itens</span></h2>'
-        + '<div class="search-box" style="margin-bottom:10px">'
-        + '  <input placeholder="Buscar por produto, marca ou endereço..." value="' + S.searchQuery + '" oninput="S.searchQuery=this.value;draw()">'
-        + '  <button class="btn ' + (S.soAbaixoMin ? 'o' : 'c') + '" onclick="S.soAbaixoMin=!S.soAbaixoMin;draw()">' + (S.soAbaixoMin ? 'Abaixo Mín: SIM' : 'Filtro Mín') + '</button>'
-        + '</div>'
+      // Tabela rica para Desktop
+      var tableHtml = '<div class="desktop-table-container">'
+        + '<table class="desktop-table">'
+        + '  <thead><tr>'
+        + '    <th>Código/ID</th><th>Produto / Descrição</th><th>Marca</th><th>Endereço WMS</th>'
+        + '    <th>Preço Custo</th><th>Preço Venda</th><th>Saldo Físico</th><th>Estoque Mínimo</th><th>Status</th>'
+        + (!isReadOnly ? '<th>Ações</th>' : '')
+        + '  </tr></thead>'
+        + '  <tbody>';
+      
+      prods.forEach(function(p) {
+        var isLow = p.q < p.min;
+        tableHtml += '<tr>'
+          + '<td><b>SKU-' + String(p.id).padStart(3, '0') + '</b></td>'
+          + '<td><b>' + p.nome + '</b></td>'
+          + '<td>' + p.marca + '</td>'
+          + '<td><span class="bd info">' + (p.loc || 'DOCA') + '</span></td>'
+          + '<td>R$ ' + p.preco_custo.toFixed(2) + '</td>'
+          + '<td>R$ ' + p.preco_venda.toFixed(2) + '</td>'
+          + '<td><b style="font-size:15px">' + p.q + ' ' + p.u + '</b></td>'
+          + '<td>' + p.min + ' ' + p.u + '</td>'
+          + '<td><span class="bd ' + (isLow ? 'a' : '') + '">' + (isLow ? 'Abaixo do Mín.' : 'Normal') + '</span></td>'
+          + (!isReadOnly ? '<td><button class="btn sm c" onclick="abrirModalEditarProduto(' + p.id + ')">Editar</button></td>' : '')
+          + '</tr>';
+      });
+      tableHtml += '</tbody></table></div>';
+
+      // Lista para Telas Menores / Mobile
+      var mobileList = '<div class="mobile-card-list">'
         + cardLista(prods, function(p) {
             var isLow = p.q < p.min;
             return '<div class="it">'
               + '<div class="d">'
               + '  <b>' + p.nome + ' <span style="font-weight:400;color:var(--text-muted)">(' + p.marca + ')</span></b>'
-              + '  <span>Endereço: <b>' + (p.loc || 'Sem endereço') + '</b> · Peso: ' + p.peso_kg + 'kg · Custo: R$' + p.preco_custo.toFixed(2) + '</span>'
+              + '  <span>Endereço: <b>' + (p.loc || 'DOCA') + '</b> · Peso: ' + p.peso_kg + 'kg · Custo: R$' + p.preco_custo.toFixed(2) + '</span>'
               + '</div>'
               + '<div style="text-align:right">'
               + '  <b style="font-size:16px;display:block">' + p.q + ' ' + p.u + '</b>'
@@ -762,7 +953,17 @@
               + (!isReadOnly ? '<button class="btn sm c" style="margin-left:6px" onclick="abrirModalEditarProduto(' + p.id + ')">Editar</button>' : '')
               + '</div>';
           })
-        + (!isReadOnly ? '<button class="btn o w" style="margin-top:12px" onclick="abrirModalNovoProduto()">+ Cadastrar Novo Produto</button>' : '')
+        + '</div>';
+
+      return '<div>'
+        + '<h2>Catálogo de Produtos <span>' + prods.length + ' de ' + S.produtos.length + ' itens</span></h2>'
+        + '<div class="search-box" style="margin-bottom:12px">'
+        + '  <input placeholder="Buscar por produto, marca ou endereço (Ctrl+K)..." value="' + S.searchQuery + '" oninput="S.searchQuery=this.value;draw()">'
+        + '  <button class="btn ' + (S.soAbaixoMin ? 'o' : 'c') + '" onclick="S.soAbaixoMin=!S.soAbaixoMin;draw()">' + (S.soAbaixoMin ? 'Abaixo Mín: SIM' : 'Filtro Mín') + '</button>'
+        + '</div>'
+        + tableHtml
+        + mobileList
+        + (!isReadOnly ? '<button class="btn o" style="margin-top:14px;min-height:48px" onclick="abrirModalNovoProduto()">+ Cadastrar Novo Produto</button>' : '')
         + '</div>';
     }
 
@@ -798,8 +999,8 @@
           + '</div>';
       }
       
-      // Default: Início Admin
-      return renderHeader('Painel de Gestão')
+      // Início Admin
+      return renderHeader('Painel de Gestão WMS')
         + '<div class="body">'
         + '<div class="stats grid-2">'
         + '  <div class="st" onclick="setTab(\'usuarios\')"><b>' + ativos + '</b><span>Usuários ativos</span></div>'
@@ -814,7 +1015,7 @@
         + '  <button class="btn o" onclick="setTab(\'auditoria\')">Auditoria Completa</button>'
         + '</div>'
         + '<div><h2>Atividade recente</h2>'
-        + cardLista(S.audit.slice(0, 4), function(a) {
+        + cardLista(S.audit.slice(0, 5), function(a) {
             return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>';
           })
         + '</div>'
@@ -865,7 +1066,7 @@
           + '</div>';
       }
 
-      // Default: Início Supervisor
+      // Início Supervisor
       return renderHeader('Gestão Operacional')
         + '<div class="body">'
         + '<div class="stats grid-2">'
@@ -884,7 +1085,7 @@
         + '</div>';
     }
 
-    // 4. OPERADOR (Chão de Fábrica com Painel de Turno da v0.2 + Execução da v0.4)
+    // 4. OPERADOR (Chão de Fábrica com Painel de Turno + Execução)
     function renderOperador() {
       var minhas = S.tarefas.filter(function(t){ return t.o === 'Bruno' || t.o === null; });
       var emAberto = minhas.filter(function(t){ return t.status !== 'Concluída'; }).length;
@@ -920,7 +1121,7 @@
         return renderHeader('Consulta de Produtos') + '<div class="body">' + renderTelaProdutos(true) + '</div>';
       }
 
-      // Default: Início Operador (Painel do Turno v0.2 consolidado)
+      // Início Operador
       return renderHeader('Painel do Turno')
         + '<div class="body">'
         + '<div class="stats grid-3">'
@@ -963,7 +1164,7 @@
           + '</div>';
       }
 
-      // Default: Tela de Conferência e Aval
+      // Tela de Conferência e Aval
       var c = S.conf;
       return renderHeader('Conferência e Aval')
         + '<div class="body">'
@@ -1016,7 +1217,7 @@
           + '</div>';
       }
 
-      // Default: Consulta de Auditoria
+      // Consulta de Auditoria
       return renderHeader('Auditoria e Compliance')
         + '<div class="ro">Somente Leitura · Acesso de auditoria e conformidade fiscal/física</div>'
         + '<div class="body">'
@@ -1025,9 +1226,9 @@
         + '  <div class="st"><b>' + totalReservado + '</b><span>Reservado</span></div>'
         + '  <div class="st"><b>' + totalBloqueado + '</b><span>Bloqueado</span></div>'
         + '</div>'
-        + '<div class="card" style="padding:14px;background:#E8F3F0;border:1px solid #14473D">'
-        + '  <b style="font-size:24px;color:#14473D">' + totalDisponivel + ' unidades</b>'
-        + '  <span style="display:block;font-size:12px;color:#14473D;margin-top:2px">Disponível para venda e picking (Físico − Reservado − Bloqueado)</span>'
+        + '<div class="card" style="padding:16px;background:#E8F3F0;border:1px solid #14473D">'
+        + '  <b style="font-size:26px;color:#14473D">' + totalDisponivel + ' unidades</b>'
+        + '  <span style="display:block;font-size:13px;color:#14473D;margin-top:2px">Disponível para venda e picking (Físico − Reservado − Bloqueado)</span>'
         + '</div>'
         + '<div><h2>Trilha Completa de Auditoria</h2>'
         + cardLista(S.audit, function(a) { return '<div class="it"><div class="d"><b>' + a.t + '</b><span>' + a.h + '</span></div></div>'; })
@@ -1189,7 +1390,7 @@
         + '<div class="modal-sheet">'
         + '  <div class="modal-head"><h3>Armazéns & Endereços</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
         + '  <div class="note">Estrutura de endereçamento do armazém de Betim/Contagem:</div>'
-        + '  <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px">'
+        + '  <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:10px">'
         + '    <div><b>Rua A:</b> Porta-paletes · 4 níveis · 80% ocupação</div>'
         + '    <div><b>Rua B:</b> Estocagem leve e caixaria · 65% ocupação</div>'
         + '    <div><b>Rua C:</b> Produtos pesados e paletes fechados</div>'
@@ -1240,6 +1441,33 @@
       auditLog('Administrador cadastrou o produto "' + novo.nome + '"');
       toast('Produto cadastrado com sucesso!');
       draw();
+    }
+
+    function abrirModalEditarProduto(id) {
+      var prod = S.produtos.find(function(p){ return p.id === id; });
+      if (!prod) return;
+      var html = '<div class="modal-backdrop" onclick="if(event.target===this)fecharModal()">'
+        + '<div class="modal-sheet frm">'
+        + '  <div class="modal-head"><h3>Editar Produto: ' + prod.nome + '</h3><button class="close-btn" onclick="fecharModal()">✕</button></div>'
+        + '  <label>Saldo Físico em Estoque<input type="number" id="ep_qtd" value="' + prod.q + '"></label>'
+        + '  <label>Estoque Mínimo<input type="number" id="ep_min" value="' + prod.min + '"></label>'
+        + '  <label>Endereço WMS<input id="ep_loc" value="' + (prod.loc || 'DOCA') + '"></label>'
+        + '  <button class="btn o w" onclick="salvarEdicaoProduto(' + prod.id + ')">Salvar Alterações</button>'
+        + '</div></div>';
+      document.getElementById('modal-container').innerHTML = html;
+    }
+
+    function salvarEdicaoProduto(id) {
+      var prod = S.produtos.find(function(p){ return p.id === id; });
+      if (prod) {
+        prod.q = parseInt(document.getElementById('ep_qtd').value) || 0;
+        prod.min = parseInt(document.getElementById('ep_min').value) || 1;
+        prod.loc = document.getElementById('ep_loc').value || 'DOCA';
+        fecharModal();
+        auditLog('Administrador atualizou saldo/endereço do produto "' + prod.nome + '"');
+        toast('Produto atualizado com sucesso!');
+        draw();
+      }
     }
 
     function abrirModalNovoUsuario() {

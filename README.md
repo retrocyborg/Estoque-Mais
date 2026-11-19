@@ -1,55 +1,58 @@
-# Estoque Mais (WMS Mobile-First)
+# Estoque Mais (WMS Mobile-First & Desktop)
 
-Projeto Estoque Mais — WMS com experiência mobile no núcleo da operação, desenhado para pequenos e médios operadores logísticos (3PLs).
+Projeto Estoque Mais — WMS multiplataforma desenhado para pequenos e médios operadores logísticos (3PLs). Funciona tanto em dispositivos móveis Android (via APK nativo) quanto em computadores (Web / Desktop PWA).
 
 ---
 
-## 📱 Versão Beta Unificada (v0.5-beta)
+## 💻 Como Rodar no Computador (Desktop / Web)
 
-Esta versão unifica em um único aplicativo Android todos os protótipos e perfis desenvolvidos nas iterações anteriores (Beta 0.1 a 0.4), conectando o domínio conceitual com o modelo relacional de banco de dados (`bd_01.sql`).
+Na branch `feature/desktop`, você pode rodar o sistema diretamente no computador (Mac, Windows ou Linux) sem precisar de emulador Android:
 
-### 👥 5 Perfis de Usuário Integrados
+### Opção 1: Via Script Bash
+```bash
+./scripts/run_desktop.sh
+```
+O script iniciará um servidor local e abrirá automaticamente o app no navegador padrão em `http://localhost:3000`.
 
-1. **Administrador:**
-   - Escopo de empresa (concessão e governança).
-   - Gestão completa de Usuários com status Ativo/Inativo em tempo real.
-   - Gestão de Catálogo de Produtos integrada à estrutura de `bd_01.sql`.
-   - Consulta de armazéns, docas e relatórios.
-2. **Supervisor:**
-   - Fila de aprovações (bloqueios de lotes, ajustes de inventário, desativação de vínculos).
-   - **Regra dos Dois Olhares (Governança):** O supervisor é impedido de aprovar a própria solicitação.
-   - Distribuição e atribuição de tarefas operacionais para a equipe de chão de fábrica.
-3. **Operador:**
-   - **Painel do Turno:** Contadores operacionais (a receber, a expedir, produtos abaixo do estoque mínimo).
-   - **Minhas Tarefas:** Ciclo de vida operacional (*Pendente* $\rightarrow$ *Em andamento* $\rightarrow$ *Concluída*).
-   - **Leitor de Código Ótico/QR:** Validação e leitura de produtos, gôndolas e paletes.
-   - **Movimentação Interna:** Transferência de estoque entre endereços do armazém.
-   - Solicitação de bloqueio de lote por avaria e registro de ocorrências.
-4. **Conferente:**
-   - Apontamento de divergências de recebimento físico vs nota/pedido.
-   - **Registro do Aval do Cliente:** Formalização da decisão do representante autorizado (com evidência em e-mail, assinatura ou documento).
-5. **Auditor:**
-   - Acesso em modo somente leitura (sem permissão de movimentação).
-   - Desdobramento e fórmula de saldo de estoque:
-     $$\text{Disponível} = \text{Físico} - \text{Reservado} - \text{Bloqueado}$$
-   - Trilha viva de auditoria e conformidade fiscal/física.
+### Opção 2: Via npm
+```bash
+npm run desktop
+# ou
+npm start
+```
+
+### 💡 Instalação como Aplicativo de Desktop (PWA)
+Ao abrir no Google Chrome, Microsoft Edge, Brave ou Safari, clique no ícone **Instalar** na barra de endereços para criar um atalho e rodar o Estoque Mais em uma janela independente de aplicativo de desktop.
+
+---
+
+## 📱 Como Gerar o APK para Android
+
+Para empacotar, alinhar e assinar o APK para celulares ou coletores Android:
+
+```bash
+./scripts/build_apk.sh
+# ou via npm:
+npm run build:apk
+```
+
+O arquivo gerado é:
+* `EstoqueMais-beta-0.5.apk` (na raiz do repositório e na pasta `~/Downloads`)
+
+---
+
+## 👥 5 Perfis de Usuário Integrados
+
+1. **Administrador:** Gestão de usuários (com auditoria em tempo real), catálogo de produtos baseado em `bd_01.sql`, armazéns e visão geral.
+2. **Supervisor:** Fila de aprovações com a **regra dos dois olhares** (bloqueio para aprovar a própria solicitação) e distribuição de tarefas para a equipe.
+3. **Operador:** Painel do turno, execução de tarefas (Receber, Picking, Armazenar, Expedir), simulador de leitor ótico/QR de código de barras e movimentação física de estoques.
+4. **Conferente:** Apontamento de divergências físicas e registro formal do **aval do cliente** com comprovação documental.
+5. **Auditor:** Acesso somente leitura com a fórmula canônica do WMS:
+   $$\text{Disponível} = \text{Físico} - \text{Reservado} - \text{Bloqueado}$$
 
 ---
 
 ## 🗄️ Banco de Dados
 
-* **Arquivo de Schema:** `bd_01.sql` (tabela de produtos, especificações métricas, preços e estoques).
-* **Script de Execução:** `./scripts/setup_db.sh`
-
----
-
-## 🛠️ Como Gerar o APK (Build Bash Script)
-
-Para empacotar, alinhar e assinar o APK unificado:
-
-```bash
-./scripts/build_apk.sh
-```
-
-O executável final será gerado em:
-* `EstoqueMais-beta-0.5.apk` (na raiz do projeto e copiado para a pasta `~/Downloads`)
+* **Arquivo de Schema:** `bd_01.sql` (tabela de produtos, custos, preços e saldos).
+* **Script de Execução:** `./scripts/setup_db.sh` (ou `npm run setup:db`)
