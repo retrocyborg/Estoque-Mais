@@ -1,10 +1,32 @@
-# Build & Outputs
+# Build & outputs
 build/
+dist/
 *.apk
+*.aab
 *.idsig
+*.dex
 
-# Keystores (podem ser ignorados ou mantidos para desenvolvimento local)
-# estoquemais-release.keystore
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+secrets/
+credentials/
 
-# macOS
+# Local database files and dumps
+*.dump
+*.sql.gz
+*.sqlite
+*.sqlite3
+
+# Editor / OS
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
