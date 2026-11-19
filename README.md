@@ -4,10 +4,6 @@ Projeto Estoque Mais — WMS com experiência mobile no núcleo da operação, d
 
 ---
 
-## 📱 Versão Beta Unificada (v0.5-beta)
-
-Esta versão unifica em um único aplicativo Android todos os protótipos e perfis desenvolvidos nas iterações anteriores (Beta 0.1 a 0.4), conectando o domínio conceitual com o modelo relacional de banco de dados (`bd_01.sql`).
-
 ### 👥 5 Perfis de Usuário Integrados
 
 1. **Administrador:**
